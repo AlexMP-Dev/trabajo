@@ -3,11 +3,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:delivery_master2/src/services/local_storage.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../services/push_notification_service.dart';
 import '../utils/app_colors.dart';
 
 class PostProvider extends ChangeNotifier {
@@ -20,7 +22,6 @@ class PostProvider extends ChangeNotifier {
     _errorMessage = value;
     notifyListeners();
   }
-
 
   File? _imageUser;
   File? get imageUser => _imageUser;
@@ -88,11 +89,28 @@ class PostProvider extends ChangeNotifier {
         "recomendaciones": recomendaciones,
         "imagenUrl": imagenUrl ?? "", // se guarda la URL de la imagen subida
         "fecha": DateTime.now(),
-
       });
+      final idUser = await LocalStorage.getIdUser();
+      final allUsers = await _firestore.collection("users").get();
+      if (allUsers.docs.isNotEmpty) {
+        for (var i = 0; i < allUsers.docs.length; i++) {
+          if (allUsers.docs[i]['uid'] != idUser) {
+            final String? idDevice = allUsers.docs[i]["tokenDevice"];
+            if (idDevice != null) {
+              await PushMessageRepository().sendPushMessage(
+                token: idDevice,
+                body: "Se agrego un nuevo producto",
+                title: "Prodcuto nuevo agregado $nameProduct",
+                urlImage: imagenUrl,
+              );
+            }
+          }
+        }
+      }
 
       onSuccess();
     } catch (e) {
+      print(e);
       onError('Ha ocurrido un error durante la publicación');
     }
   }
@@ -140,8 +158,7 @@ class PostProvider extends ChangeNotifier {
                     ],
                   ),
                   onPressed: () async {
-                    final pickedFile = await ImagePicker()
-                        .pickImage(source: ImageSource.gallery);
+                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
                     if (pickedFile != null) {
                       final croppedFile = await ImageCropper().cropImage(
                         sourcePath: pickedFile.path,
@@ -174,7 +191,6 @@ class PostProvider extends ChangeNotifier {
                           case 1:
                             _image = newFile;
                             break;
-                     
                         }
                         notifyListeners();
                       }
@@ -205,8 +221,7 @@ class PostProvider extends ChangeNotifier {
                     ],
                   ),
                   onPressed: () async {
-                    final pickedFile = await ImagePicker()
-                        .pickImage(source: ImageSource.camera);
+                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
                     if (pickedFile != null) {
                       final croppedFile = await ImageCropper().cropImage(
                         sourcePath: pickedFile.path,
@@ -239,7 +254,6 @@ class PostProvider extends ChangeNotifier {
                           case 1:
                             _image = newFile;
                             break;
-                     
                         }
                         notifyListeners();
                       }
@@ -259,7 +273,6 @@ class PostProvider extends ChangeNotifier {
         case 1:
           _image = newFile;
           break;
-     
       }
       notifyListeners();
     }

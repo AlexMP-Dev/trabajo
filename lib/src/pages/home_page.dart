@@ -1,8 +1,10 @@
 import 'package:delivery_master2/src/post/add_post_product.dart';
 import 'package:delivery_master2/src/post/contenido_negocios.dart';
+import 'package:delivery_master2/src/provider/home_provider.dart';
 import 'package:delivery_master2/src/services/firebase_services.dart';
 import 'package:delivery_master2/src/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +15,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final FirestoreService _firestoreService = FirestoreService();
+
+  @override
+  void initState() {
+    context.read<HomeProvider>().updateTokenNotificationUser();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,10 +52,7 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const AddPostProductos()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const AddPostProductos()));
         },
       ),
     );

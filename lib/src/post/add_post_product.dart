@@ -26,8 +26,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
   final TextEditingController _cantidadController = TextEditingController();
 
   final TextEditingController _descripcionController = TextEditingController();
-  final TextEditingController _recomendacionesController =
-      TextEditingController();
+  final TextEditingController _recomendacionesController = TextEditingController();
 
   String? _selectedCantidad;
 //DATOS PARA EL DROWBUTTOM
@@ -49,8 +48,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
   }
 
   Future<void> getNegocios() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection('Negocios').get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Negocios').get();
     setState(() {
       negocios = querySnapshot.docs.map((doc) => doc.id).toList();
     });
@@ -58,11 +56,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
 
   Future<void> getSubcoleccionesProductos() async {
     if (selectedNegocio != null) {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Negocios')
-          .doc(selectedNegocio)
-          .collection("Categorias")
-          .get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Negocios').doc(selectedNegocio).collection("Categorias").get();
       setState(() {
         subcolecciones = querySnapshot.docs.map((doc) => doc.id).toList();
         //selectedSubcoleccion = null;
@@ -73,11 +67,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
 
   Future<void> getSubcoleccionesServicios() async {
     if (selectedNegocio != null) {
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('Negocios')
-          .doc(selectedNegocio)
-          .collection("Servicios")
-          .get();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('Negocios').doc(selectedNegocio).collection("Servicios").get();
       setState(() {
         subcolecciones = querySnapshot.docs.map((doc) => doc.id).toList();
         //selectedSubcoleccion = null;
@@ -151,11 +141,15 @@ class _AddPostProductosState extends State<AddPostProductos> {
           setState(() {
             _isLoading = false;
           });
+
           showSnackbar2(context, "Tu publicación fue enviada");
           Navigator.of(context).pop();
         },
         onError: (String error) {
           showSnackbar2(context, error);
+          setState(() {
+            _isLoading = false;
+          });
         },
       );
     } catch (e) {
@@ -188,8 +182,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.oscureColor,
-        title: const Text('Agregar nueva mascota',
-            style: TextStyle(fontFamily: "MonB", fontSize: 18)),
+        title: const Text('Agregar nueva mascota', style: TextStyle(fontFamily: "MonB", fontSize: 18)),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -228,11 +221,8 @@ class _AddPostProductosState extends State<AddPostProductos> {
                 const SizedBox(height: 15),
                 const Padding(
                   padding: EdgeInsets.all(5.0),
-                  child: Text(
-                      "Primero elige las imagenes y después la categoria, así las imagenes se mostrarán.",
-                      style: TextStyle(
-                          fontFamily: "MonB", color: AppColors.oscureColor),
-                      textAlign: TextAlign.center),
+                  child: Text("Primero elige las imagenes y después la categoria, así las imagenes se mostrarán.",
+                      style: TextStyle(fontFamily: "MonB", color: AppColors.oscureColor), textAlign: TextAlign.center),
                 ),
                 const SizedBox(height: 15),
                 //AQUI LOS DROWBUTTOMFORMFIELD
@@ -252,12 +242,10 @@ class _AddPostProductosState extends State<AddPostProductos> {
                       selectedDocumento = null;
                       selectedSubcoleccionDocumento = null;
                       if (value == "Categorias") {
-                        selectedSubcoleccion =
-                            "Categorias"; // Asignar directamente la selección en el segundo DropdownButtonFormField
+                        selectedSubcoleccion = "Categorias"; // Asignar directamente la selección en el segundo DropdownButtonFormField
                         getSubcoleccionesProductos();
                       } else if (value == "Servicios") {
-                        selectedSubcoleccion =
-                            "Servicios"; // Asignar directamente la selección en el segundo DropdownButtonFormField
+                        selectedSubcoleccion = "Servicios"; // Asignar directamente la selección en el segundo DropdownButtonFormField
                         getSubcoleccionesServicios();
                       }
                     });
@@ -269,8 +257,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
                   InputDropdownButtonWidget(
                     labelText: 'Subcolección',
                     value: selectedSubcoleccion,
-                    items:
-                        <String>['Categorias', 'Servicios'].map((String value) {
+                    items: <String>['Categorias', 'Servicios'].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(value),
@@ -354,8 +341,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
                   labelText: 'Nombre del producto',
                   hintText: "Nombre del producto",
                   keyboardType: TextInputType.name,
-                  suffixIcon: const Icon(Icons.pets_rounded,
-                      color: AppColors.oscureColor),
+                  suffixIcon: const Icon(Icons.pets_rounded, color: AppColors.oscureColor),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Este campo es requerido';
@@ -374,8 +360,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
                         hintText: "Precio del producto",
                         maxLines: TextField.noMaxLength,
                         labelText: 'Precio del Producto',
-                        suffixIcon: const Icon(Icons.menu_book_rounded,
-                            color: AppColors.oscureColor),
+                        suffixIcon: const Icon(Icons.menu_book_rounded, color: AppColors.oscureColor),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Este campo es requerido';
@@ -418,8 +403,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
                   hintText: "Describe tu producto",
                   maxLines: TextField.noMaxLength,
                   labelText: 'Describe tu producto',
-                  suffixIcon: const Icon(Icons.menu_book_rounded,
-                      color: AppColors.oscureColor),
+                  suffixIcon: const Icon(Icons.menu_book_rounded, color: AppColors.oscureColor),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Este campo es requerido';
@@ -434,8 +418,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
                   keyboardType: TextInputType.multiline,
                   hintText: "Recomendaciones para su cuidado",
                   labelText: 'Recomendaciones para su cuidado',
-                  suffixIcon: const Icon(Icons.security_rounded,
-                      color: AppColors.oscureColor),
+                  suffixIcon: const Icon(Icons.security_rounded, color: AppColors.oscureColor),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Este campo es requerido';
@@ -449,8 +432,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
                     ? const CircularProgressWidget(text: "Cargando..")
                     : MaterialButton(
                         color: AppColors.blueAcents,
-                        child: const Text("Publicar",
-                            style: TextStyle(color: AppColors.text)),
+                        child: const Text("Publicar", style: TextStyle(color: AppColors.text)),
                         onPressed: () {
                           _submitForm();
                           // Cerrar el teclado
@@ -458,8 +440,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
                           if (postProvider.image == null) {
                             // Si no se ha seleccionado una imagen, muestra un mensaje de error
                             setState(() {
-                              postProvider.errorMessage =
-                                  'Por favor, seleccione una imagen';
+                              postProvider.errorMessage = 'Por favor, seleccione una imagen';
                             });
                             return;
                           }
@@ -475,8 +456,7 @@ class _AddPostProductosState extends State<AddPostProductos> {
   }
 }
 
-Widget _buildImageCard(
-    PostProvider postProvider, File? image, String text, Function() onTap) {
+Widget _buildImageCard(PostProvider postProvider, File? image, String text, Function() onTap) {
   return image != null
       ? Card(
           elevation: 15,
@@ -522,8 +502,7 @@ Widget _buildImageCard(
                 width: 4,
               ),
             ),
-            child: InkWell(
-                onTap: onTap, child: Image.asset("assets/images/noimage.png")),
+            child: InkWell(onTap: onTap, child: Image.asset("assets/images/noimage.png")),
           ),
         );
 }

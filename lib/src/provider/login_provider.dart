@@ -1,10 +1,10 @@
 // ignore_for_file: unused_local_variable
 
+import 'package:delivery_master2/src/services/local_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 enum AuthStatus {
   notAuthenticated,
@@ -35,33 +35,26 @@ class LoginProvider extends ChangeNotifier {
       authStatus = AuthStatus.checking;
       final String usernameOrEmailLower = usernameOrEmail.toLowerCase();
 
-      final QuerySnapshot result = await _firestore
-          .collection('users')
-          .where('username_lowercase', isEqualTo: usernameOrEmailLower)
-          .limit(1)
-          .get();
+      final QuerySnapshot result = await _firestore.collection('users').where('username_lowercase', isEqualTo: usernameOrEmailLower).limit(1).get();
 
       if (result.docs.isNotEmpty) {
         final String email = result.docs.first.get('email');
-        final UserCredential userCredential =
-            await _auth.signInWithEmailAndPassword(
+
+        final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
+        debugPrint("USER ::: : :: $userCredential");
+
         checkAuthStatus();
         onSuccess();
         return;
       }
 
-      final QuerySnapshot resultEmail = await _firestore
-          .collection('users')
-          .where('email', isEqualTo: usernameOrEmailLower)
-          .limit(1)
-          .get();
+      final QuerySnapshot resultEmail = await _firestore.collection('users').where('email', isEqualTo: usernameOrEmailLower).limit(1).get();
 
       if (resultEmail.docs.isNotEmpty) {
-        final UserCredential userCredential =
-            await _auth.signInWithEmailAndPassword(
+        final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: resultEmail.docs.first.get('email'),
           password: password,
         );
@@ -84,21 +77,13 @@ class LoginProvider extends ChangeNotifier {
 
   //VERIFICA SI EL NOMBRE DE USUARIO YA SE ENCUENTRA EN LA BASE DE DATOS
   Future<bool> checkUsernameExistsLogin(String username) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('username', isEqualTo: username.toLowerCase())
-        .limit(1)
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: username.toLowerCase()).limit(1).get();
     return snapshot.docs.isNotEmpty;
   }
 
   //VERIFICA SI EL EMAIL YA SE ENCUENTRA EN LA BASE DE DATOS
   Future<bool> checkEmailExistsLogin(String email) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: email.toLowerCase())
-        .limit(1)
-        .get();
+    final snapshot = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: email.toLowerCase()).limit(1).get();
     return snapshot.docs.isNotEmpty;
   }
 
@@ -112,6 +97,7 @@ class LoginProvider extends ChangeNotifier {
       try {
         final decodedToken = tokenResult.claims;
         final rol = decodedToken!['rol'];
+        LocalStorage.saveIdUser(user.uid);
 
         // Verificar permisos de usuario según las reglas de Firestore
         final firestore = FirebaseFirestore.instance;
@@ -155,19 +141,13 @@ class LoginProvider extends ChangeNotifier {
   Future<String?> getUserRol(String usernameOrEmail) async {
     final String usernameOrEmailLower = usernameOrEmail.toLowerCase();
 
-    final userDocs = await FirebaseFirestore.instance
-        .collection('users')
-        .where('username', isEqualTo: usernameOrEmailLower)
-        .get();
+    final userDocs = await FirebaseFirestore.instance.collection('users').where('username', isEqualTo: usernameOrEmailLower).get();
 
     if (userDocs.docs.isNotEmpty) {
       return userDocs.docs.first.get('rol');
     }
 
-    final emailDocs = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: usernameOrEmailLower)
-        .get();
+    final emailDocs = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: usernameOrEmailLower).get();
 
     if (emailDocs.docs.isNotEmpty) {
       return emailDocs.docs.first.get('rol');
@@ -177,12 +157,8 @@ class LoginProvider extends ChangeNotifier {
 
 //PARA MOSTRAR EL NOMBRE SE USUARIO CUANDO INICIA SESION
   Future<String?> getUsername(String email) async {
-    final QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-        .instance
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .limit(1)
-        .get();
+    final QuerySnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: email).limit(1).get();
 
     if (snapshot.docs.isNotEmpty) {
       final userData = snapshot.docs[0].data();
@@ -191,6 +167,4 @@ class LoginProvider extends ChangeNotifier {
 
     return null;
   }
-
-
 }
