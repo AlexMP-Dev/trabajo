@@ -14,13 +14,7 @@ class FirebaseNotification {
 
   //Metodo para cuando la notificacion cuando la app esta en primer plano o resumida
   static Future _onMessage(RemoteMessage message) async {
-    String? urlImage;
-    if (Platform.isAndroid) {
-      urlImage = message.notification!.android!.imageUrl;
-    }
-    if (Platform.isIOS) {
-      urlImage = message.notification!.apple!.imageUrl;
-    }
+    final urlImage = message.data['urlImage'];
     NotificationServices().showNotification(
       id: Random().nextInt(1000),
       // int.parse(message.data['notificationid']),
@@ -33,13 +27,7 @@ class FirebaseNotification {
 //Metodo para la notificacion cuando esta destruida la app
   static Future _messageHandler(RemoteMessage message) async {
     _messageStream.add(message.data['userid'].toString());
-    String? urlImage;
-    if (Platform.isAndroid) {
-      urlImage = message.notification!.android!.imageUrl;
-    }
-    if (Platform.isIOS) {
-      urlImage = message.notification!.apple!.imageUrl;
-    }
+    final urlImage = message.data['urlImage'];
     NotificationServices().showNotification(
       id: Random().nextInt(1000),
       // int.parse(message.data['notificationid']),
