@@ -38,11 +38,11 @@ class NotificationServices {
         importance: Importance.max,
         priority: Priority.max,
         largeIcon: imageUrl == null ? null : ByteArrayAndroidBitmap(imageUrl),
-        styleInformation: imageUrl == null
-            ? null
-            : BigPictureStyleInformation(
-                ByteArrayAndroidBitmap(imageUrl),
-              ),
+        // styleInformation: imageUrl == null
+        //     ? null
+        //     : BigPictureStyleInformation(
+        //         ByteArrayAndroidBitmap(imageUrl),
+        //       ),
       ),
       // iOS: IOSNotificationDetails(),
     );
