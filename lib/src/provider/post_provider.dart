@@ -4,12 +4,12 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delivery_master2/src/services/local_storage.dart';
+import 'package:delivery_master2/src/services/push_notification_service.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../services/push_notification_service.dart';
 import '../utils/app_colors.dart';
 
 class PostProvider extends ChangeNotifier {
@@ -158,7 +158,8 @@ class PostProvider extends ChangeNotifier {
                     ],
                   ),
                   onPressed: () async {
-                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    final pickedFile = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
                     if (pickedFile != null) {
                       final croppedFile = await ImageCropper().cropImage(
                         sourcePath: pickedFile.path,
@@ -221,7 +222,8 @@ class PostProvider extends ChangeNotifier {
                     ],
                   ),
                   onPressed: () async {
-                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+                    final pickedFile = await ImagePicker()
+                        .pickImage(source: ImageSource.camera);
                     if (pickedFile != null) {
                       final croppedFile = await ImageCropper().cropImage(
                         sourcePath: pickedFile.path,
